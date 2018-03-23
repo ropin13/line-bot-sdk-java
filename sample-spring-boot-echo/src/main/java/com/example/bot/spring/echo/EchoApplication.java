@@ -56,7 +56,7 @@ public class EchoApplication {
             userProfileResponse = client.getProfile("<userId>").get();
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
         System.out.println(userProfileResponse.getUserId());
