@@ -26,20 +26,34 @@ import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 
+import com.linecorp.bot.client.LineMessagingClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.linecorp.bot.model.response.BotApiResponse;
+import com.linecorp.bot.model.profile.UserProfileResponse;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.io.IOException;
+
+
 @SpringBootApplication
 @LineMessageHandler
 public class EchoApplication {
     public static void main(String[] args) {
         SpringApplication.run(EchoApplication.class, args);
     }
-
+    
+    @Autowired
+    public LineMessagingClient client;
+    
     @EventMapping
     public List<TextMessage> echoTextMessageEvent(MessageEvent<TextMessageContent> event) {
         System.out.println("event: " + event);
         final UserProfileResponse userProfileResponse;
         try {
             userProfileResponse = client.getProfile("<userId>").get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }
