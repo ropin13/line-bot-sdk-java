@@ -33,11 +33,28 @@ public class EchoApplication {
         SpringApplication.run(EchoApplication.class, args);
     }
 
-    //@EventMapping
-    //public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-    //    System.out.println("event: " + event);
-    //    return new TextMessage("ECHO:" + event.getMessage().getText());
-    //}
+    @EventMapping
+    public List<TextMessage> echoTextMessageEvent(MessageEvent<TextMessageContent> event) {
+        System.out.println("event: " + event);
+        final UserProfileResponse userProfileResponse;
+        try {
+            userProfileResponse = client.getProfile("<userId>").get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        System.out.println(userProfileResponse.getUserId());
+        System.out.println(userProfileResponse.getDisplayName());
+        System.out.println(userProfileResponse.getPictureUrl());
+        List<TextMessage> msgs = new ArrayList<TextMessage>();
+        msgs.add(new TextMessage("ECHO:" + event.getMessage().getText()));
+        msgs.add(new TextMessage("ECHO ID:" + userProfileResponse.getUserId() ));
+        msgs.add(new TextMessage("ECHO getDisplayName:" + userProfileResponse.getDisplayName() ));
+        msgs.add(new TextMessage("ECHO getPictureUrl:" + userProfileResponse.getPictureUrl() ));
+        
+        return msgs;
+    }
 
     @EventMapping
     public void handleDefaultMessageEvent(Event event) {
