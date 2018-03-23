@@ -48,7 +48,7 @@ public class EchoApplication {
     @Autowired
     public LineMessagingClient client;
     
-    @EventMapping
+    //@EventMapping
     public List<TextMessage> echoTextMessageEvent(MessageEvent<TextMessageContent> event) {
         System.out.println("event: " + event);
         final UserProfileResponse userProfileResponse;
