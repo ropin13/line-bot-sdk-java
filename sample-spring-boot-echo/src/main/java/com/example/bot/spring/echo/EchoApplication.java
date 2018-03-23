@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
+import java.lang.Exception;
 
 
 @SpringBootApplication
@@ -53,8 +53,8 @@ public class EchoApplication {
         System.out.println("event: " + event);
         final UserProfileResponse userProfileResponse;
         try {
-            userProfileResponse = client.getProfile("<userId>").get();
-        } catch (IOException e) {
+            userProfileResponse = client.getProfile("U4249d90685aa7150e2f6365825cebd27").get();
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
