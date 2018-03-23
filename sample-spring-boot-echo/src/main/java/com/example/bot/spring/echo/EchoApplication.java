@@ -33,11 +33,11 @@ public class EchoApplication {
         SpringApplication.run(EchoApplication.class, args);
     }
 
-    @EventMapping
-    public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-        System.out.println("event: " + event);
-        return new TextMessage("ECHO:" + event.getMessage().getText());
-    }
+    //@EventMapping
+    //public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
+    //    System.out.println("event: " + event);
+    //    return new TextMessage("ECHO:" + event.getMessage().getText());
+    //}
 
     @EventMapping
     public void handleDefaultMessageEvent(Event event) {
