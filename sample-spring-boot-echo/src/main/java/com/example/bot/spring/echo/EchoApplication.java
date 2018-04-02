@@ -16,30 +16,33 @@
 
 package com.example.bot.spring.echo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.linecorp.bot.client.LineMessagingClient;
+import com.linecorp.bot.model.PushMessage;
 import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.profile.UserProfileResponse;
+import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
-
-import com.linecorp.bot.client.LineMessagingClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.linecorp.bot.model.response.BotApiResponse;
-import com.linecorp.bot.model.profile.UserProfileResponse;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.Exception;
 
 
 @SpringBootApplication
 @LineMessageHandler
+@Controller
 public class EchoApplication {
     public static void main(String[] args) {
         SpringApplication.run(EchoApplication.class, args);
@@ -48,12 +51,39 @@ public class EchoApplication {
     @Autowired
     public LineMessagingClient client;
     
-    //@EventMapping
+    /** echo msg
+     * @param event
+     * @return
+     */
+    //@EventMapping //很吵先關掉
     public List<TextMessage> echoTextMessageEvent(MessageEvent<TextMessageContent> event) {
-        System.out.println("event: " + event);
+        System.out.println("echoTextMessageEvent: " + event);
+        List<TextMessage> msgs = new ArrayList<TextMessage>();
+        msgs.add(new TextMessage("ECHO:" + event.getMessage().getText()));
+        
+        return msgs;
+    }
+    
+
+    /**預設處理，單純顯示
+     * @param event
+     */
+    @EventMapping
+    public void handleDefaultMessageEvent(Event event) {
+        System.out.println("handleDefaultMessageEvent: " + event);
+        System.out.println("handleDefaultMessageEvent: senderId " + event.getSource().getSenderId());
+    }
+
+    /**查查id是誰，只適用 一般User Id, 不是用group, room id
+     * @param id
+     * @return
+     */
+    @RequestMapping("/whois/{id}")
+    @ResponseBody
+    String whois(@PathVariable("id")String id) {
         final UserProfileResponse userProfileResponse;
         try {
-            userProfileResponse = client.getProfile("U4249d90685aa7150e2f6365825cebd27").get();
+            userProfileResponse = client.getProfile(id).get();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -62,17 +92,24 @@ public class EchoApplication {
         System.out.println(userProfileResponse.getUserId());
         System.out.println(userProfileResponse.getDisplayName());
         System.out.println(userProfileResponse.getPictureUrl());
-        List<TextMessage> msgs = new ArrayList<TextMessage>();
-        msgs.add(new TextMessage("ECHO:" + event.getMessage().getText()));
-        msgs.add(new TextMessage("ECHO ID:" + userProfileResponse.getUserId() ));
-        msgs.add(new TextMessage("ECHO getDisplayName:" + userProfileResponse.getDisplayName() ));
-        msgs.add(new TextMessage("ECHO getPictureUrl:" + userProfileResponse.getPictureUrl() ));
-        
-        return msgs;
+//        msgs.add(new TextMessage("ECHO ID:" + userProfileResponse.getUserId() ));
+//        msgs.add(new TextMessage("ECHO getDisplayName:" + userProfileResponse.getDisplayName() ));
+//        msgs.add(new TextMessage("ECHO getPictureUrl:" + userProfileResponse.getPictureUrl() ));
+        return userProfileResponse.getDisplayName();
     }
 
-    @EventMapping
-    public void handleDefaultMessageEvent(Event event) {
-        System.out.println("event: " + event);
+
+    /**幫忙送text訊息
+     * @param id
+     * @param msg
+     * @return
+     */
+    @RequestMapping("/push/{id}/{msg}")
+    @ResponseBody
+    String pushTextMessage(@PathVariable("id")String id, @PathVariable("msg")String msg) {
+        PushMessage pushMessage = new PushMessage(id, new TextMessage(msg));
+		CompletableFuture<BotApiResponse> resp = client.pushMessage(pushMessage);
+		
+        return "push msg " + resp.toString();
     }
 }
