@@ -73,10 +73,15 @@ public class EchoApplication {
         System.out.println("askIdTextMessageEvent: " + event);
         String askText = event.getMessage().getText();
         System.out.println("askText: " + askText);
-        if(null!=askText && askText.length()>0 && askText.contains("ID") && (askText.contains("什麼") || askText.contains("多少") || askText.contains("?"))){
-            List<TextMessage> msgs = new ArrayList<TextMessage>();
-            msgs.add(new TextMessage("您的ID是 " + event.getSource().getSenderId()));
-            return msgs;
+        
+        if(null!=askText && askText.length()>0){
+            askText = askText.trim().toUpperCase();
+            System.out.println("askText trim, to upper: " + askText);
+        	if(askText.contains("LINEID") && (askText.contains("什麼") || askText.contains("多少") || askText.contains("?"))){
+        		List<TextMessage> msgs = new ArrayList<TextMessage>();
+        		msgs.add(new TextMessage("您的LINE ID是 " + event.getSource().getSenderId()));
+        		return msgs;
+        	}
         }
     	return null;
         
