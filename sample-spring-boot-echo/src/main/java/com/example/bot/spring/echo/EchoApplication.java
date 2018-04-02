@@ -63,7 +63,23 @@ public class EchoApplication {
         
         return msgs;
     }
-    
+
+    /**
+     * @param event
+     * @return
+     */
+    @EventMapping 
+    public List<TextMessage> askIdTextMessageEvent(MessageEvent<TextMessageContent> event) {
+        System.out.println("echoTextMessageEvent: " + event);
+        String askText = event.getMessage().getText();
+        if(null!=askText && askText.length()>0 && askText.contains("ID") && (askText.contains("什麼") || askText.contains("多少") || askText.contains("?"))){
+            List<TextMessage> msgs = new ArrayList<TextMessage>();
+            msgs.add(new TextMessage("您的ID是 " + event.getSource().getSenderId()));
+            return msgs;
+        }
+    	return null;
+        
+    }
 
     /**預設處理，單純顯示
      * @param event
