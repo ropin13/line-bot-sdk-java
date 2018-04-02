@@ -70,8 +70,9 @@ public class EchoApplication {
      */
     @EventMapping 
     public List<TextMessage> askIdTextMessageEvent(MessageEvent<TextMessageContent> event) {
-        System.out.println("echoTextMessageEvent: " + event);
+        System.out.println("askIdTextMessageEvent: " + event);
         String askText = event.getMessage().getText();
+        System.out.println("askText: " + askText);
         if(null!=askText && askText.length()>0 && askText.contains("ID") && (askText.contains("什麼") || askText.contains("多少") || askText.contains("?"))){
             List<TextMessage> msgs = new ArrayList<TextMessage>();
             msgs.add(new TextMessage("您的ID是 " + event.getSource().getSenderId()));
