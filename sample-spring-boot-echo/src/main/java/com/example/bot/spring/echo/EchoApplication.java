@@ -51,24 +51,34 @@ public class EchoApplication {
     //@EventMapping
     public List<TextMessage> echoTextMessageEvent(MessageEvent<TextMessageContent> event) {
         System.out.println("event: " + event);
-        final UserProfileResponse userProfileResponse;
-        try {
-            userProfileResponse = client.getProfile("U4249d90685aa7150e2f6365825cebd27").get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+//         final UserProfileResponse userProfileResponse;
+//         try {
+//             userProfileResponse = client.getProfile("U4249d90685aa7150e2f6365825cebd27").get();
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//             return null;
+//         }
 
-        System.out.println(userProfileResponse.getUserId());
-        System.out.println(userProfileResponse.getDisplayName());
-        System.out.println(userProfileResponse.getPictureUrl());
-        List<TextMessage> msgs = new ArrayList<TextMessage>();
-        msgs.add(new TextMessage("ECHO:" + event.getMessage().getText()));
-        msgs.add(new TextMessage("ECHO ID:" + userProfileResponse.getUserId() ));
-        msgs.add(new TextMessage("ECHO getDisplayName:" + userProfileResponse.getDisplayName() ));
-        msgs.add(new TextMessage("ECHO getPictureUrl:" + userProfileResponse.getPictureUrl() ));
-        
-        return msgs;
+//         System.out.println(userProfileResponse.getUserId());
+//         System.out.println(userProfileResponse.getDisplayName());
+//         System.out.println(userProfileResponse.getPictureUrl());
+//         List<TextMessage> msgs = new ArrayList<TextMessage>();
+//         msgs.add(new TextMessage("ECHO:" + event.getMessage().getText()));
+//         msgs.add(new TextMessage("ECHO ID:" + userProfileResponse.getUserId() ));
+//         msgs.add(new TextMessage("ECHO getDisplayName:" + userProfileResponse.getDisplayName() ));
+//         msgs.add(new TextMessage("ECHO getPictureUrl:" + userProfileResponse.getPictureUrl() ));
+        String askText = event.getMessage().getText();
+        System.out.println("askText: " + askText);
+        if(null!=askText && askText.length()>0){
+            askText = askText.trim().toUpperCase();
+            System.out.println("askText trim, to upper: " + askText);
+        	if(askText.contains("LINEID") && (askText.contains("什麼") || askText.contains("多少") || askText.contains("?"))){
+        		List<TextMessage> msgs = new ArrayList<TextMessage>();
+        		msgs.add(new TextMessage("您的LINE ID是 " + event.getSource().getSenderId()));
+        		return msgs;
+        	}
+        }
+        return null;
     }
 
     @EventMapping
